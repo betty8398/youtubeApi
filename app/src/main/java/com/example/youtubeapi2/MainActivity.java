@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private String videoID ="FuWpTXZR2bo"; // 接續在https://www.youtube.com/watch?v= 後面的短網址
     private YouTubePlayerSeekBar youTubePlayerSeekBar;
     private YouTubePlayerTracker tracker;
+    private String ppp;
 
 
     @Override
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                //自動播放影片 從第120秒
-                youTubePlayer.loadVideo(videoID, 120);
+                //自動播放影片 從第0秒
+                youTubePlayer.loadVideo(videoID, 0);
                 //不自動播放畫面 停在封面圖片 按下播放從第120開始
                 //youTubePlayer.cueVideo(videoID,120);
                 //TODO 解決旋轉重新播放問題
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
             }
 
         });
@@ -64,24 +64,27 @@ public class MainActivity extends AppCompatActivity {
         //監控時間
         //String.format(TimeUtilities, 10);
         youTubePlayerSeekBar=findViewById(R.id.SeekBar);
-        //TODO 解決seekbar 沒辦法符合影片長度問題
+
         youTubePlayerSeekBar.setYoutubePlayerSeekBarListener(new YouTubePlayerSeekBarListener() {
             @Override
             public void seekTo(float time) {
                 //youTubePlayer是youTubePlayerView的原件 用來控制播放時間
                 youTubePlayerView.getYouTubePlayerWhenReady(youTubePlayer -> {
-                    youTubePlayer.seekTo(time);
+                    //time 指的是seek bar的百分比 VideoDuration是影片總長
+                    youTubePlayer.seekTo(time*tracker.getVideoDuration()/100);
 
                     //影片狀態追蹤器
-
+                    //TODO
+                    Toast.makeText(MainActivity.this, "目前影片時間"+tracker.getCurrentSecond(), Toast.LENGTH_SHORT).show();
                     Log.d("tracker", "tracker getState = "+tracker.getState()); //在播放還是暫停
-                    Log.d("tracker", "tracker getCurrentSecond = "+tracker.getCurrentSecond()); //上個播放時間
+                    Log.d("tracker", "tracker getCurrentSecond = "+tracker.getCurrentSecond()); //上一秒播放時間
                     Log.d("tracker", "tracker getVideoDuration = "+tracker.getVideoDuration()); //影片總長度
                     Log.d("tracker", "tracker getVideoId = "+tracker.getVideoId()); //影片ID
-                    //TODO 將treak的秒數轉換成MM:SS
-                    Toast.makeText(MainActivity.this, "目前影片時間"+tracker.getCurrentSecond(), Toast.LENGTH_SHORT).show();
+
                 });
             }
         });
+
+
     }
 }
